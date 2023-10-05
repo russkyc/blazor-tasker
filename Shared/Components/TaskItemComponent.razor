@@ -12,7 +12,7 @@
                 }
                 else
                 {
-                    <MudButton Size="Size.Medium" Class="align-self-center" StartIcon="@Icons.Material.Filled.Done" @onclick="@Complete" Variant="Variant.Filled" Color="Color.Primary">Done</MudButton>
+                    <MudButton Size="Size.Medium" Class="align-self-center" StartIcon="@Icons.Material.Filled.Done" @onclick="@(async () => await Complete())" Variant="Variant.Filled" Color="Color.Primary">Done</MudButton>
                 }
             </MudStack>
         </MudPaper>
@@ -30,11 +30,13 @@
     void Remove()
     {
         _isDisposed = true;
+        StateHasChanged();
     }
 
-    void Complete()
+    async Task Complete()
     {
         Task.IsCompleted = true;
-        OnCompleted.InvokeAsync();
+        await OnCompleted.InvokeAsync();
+        StateHasChanged();
     }
 }

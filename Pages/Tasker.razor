@@ -2,10 +2,11 @@
 
 @using TodoApp.Shared.Components
 @using TodoApp.Models
-@using Supabase
+@using TodoApp.Persistence
+@using SqliteWasmHelper
+@using Microsoft.EntityFrameworkCore
 
-@inject Client Client
-
+@inject ISqliteWasmDbContextFactory<AppDbContext> DbFactory
 <PageTitle>Blazor Tasker Wasm</PageTitle>
 
 <MudContainer Class="align-items-center" MaxWidth="MaxWidth.Small">
@@ -22,7 +23,7 @@
             <MudStack Spacing="5">
                 @foreach (TaskItem task in Tasks)
                 {
-                    <TaskItemComponent @key="@task.GetHashCode" Task="@task" OnCompleted="@(async () => await CompleteTask(task))" OnRemove="@(async () => await RemoveTask(task))"/>
+                    <TaskItemComponent @key="@task.GetHashCode" Task="@task" OnCompleted="@(async () => await CompleteTask(task.Id))" OnRemove="@(async () => await RemoveTask(task))"/>
                 }
             </MudStack>
             <Animation Effect="@Effect.FadeIn" Speed="@Speed.Faster">
@@ -54,40 +55,48 @@
     {
         if (firstRender)
         {
-            var response = await Client.From<TaskItem>()
-                .Get();
-            Tasks = response.Models;
+            await using var db = await DbFactory.CreateDbContextAsync();
+            Tasks = await db.Tasks.ToListAsync();
             StateHasChanged();
         }
     }
 
     async Task AddTask()
     {
-        Tasks.Add(Task);
-        await Client.From<TaskItem>()
-            .Insert(Task);
-        Task = new();
+        await using var db = await DbFactory.CreateDbContextAsync();
+        await db.Tasks.AddAsync(Task);
+        await db.SaveChangesAsync();
         StateHasChanged();
+        Task = new();
     }
 
-    async Task CompleteTask(TaskItem taskItem)
+    async Task CompleteTask(int id)
     {
-        await Client.From<TaskItem>()
-            .Where(task => task.Id == taskItem.Id)
-            .Set(task => task.IsCompleted, true)
-            .Update();
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var task = db.Tasks.FirstOrDefault(t => t.Id == id);
+
+        if (task is null)
+        {
+            return;
+        }
         
+        task.IsCompleted = true;
+        await db.SaveChangesAsync();
         StateHasChanged();
     }
 
     async Task RemoveTask(TaskItem taskItem)
     {
-        Tasks.Remove(taskItem);
-        await Client.From<TaskItem>()
-            .Where(task => task.Id == taskItem.Id)
-            .Set(task => task.IsCompleted, true)
-            .Delete();
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var task = db.Tasks.FirstOrDefault(task => task.Id == taskItem.Id);
+
+        if (task is null)
+        {
+            return;
+        }
         
+        db.Remove(task);
+        await db.SaveChangesAsync();
         StateHasChanged();
     }
 }

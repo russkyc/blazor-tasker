@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2023 Russell Camo (Russkyc)
 // 
@@ -20,21 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.EntityFrameworkCore;
-using TodoApp;
-using MudBlazor.Services;
-using SqliteWasmHelper;
-using TodoApp.Persistence;
+using TodoApp.Models;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
-builder.Services.AddSqliteWasmDbContextFactory<AppDbContext>(
-    opts => opts.UseSqlite("Data Source=tasks.db"));
+namespace TodoApp.Persistence;
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddMudServices();
-
-await builder.Build().RunAsync();
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+        
+    }
+    public DbSet<TaskItem> Tasks { get; set; }
+}

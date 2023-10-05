@@ -46,7 +46,6 @@
 {
     private readonly string _deviceId = new DeviceIdBuilder()
         .AddUserName()
-        .AddMacAddress()
         .AddMachineName()
         .AddOsVersion()
         .ToString() ?? string.Empty;

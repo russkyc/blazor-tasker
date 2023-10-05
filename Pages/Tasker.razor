@@ -3,7 +3,6 @@
 @using TodoApp.Shared.Components
 @using TodoApp.Models
 @using Supabase
-@using DeviceId
 
 @inject Client Client
 
@@ -44,12 +43,6 @@
 
 @code
 {
-    private readonly string _deviceId = new DeviceIdBuilder()
-        .AddUserName()
-        .AddMachineName()
-        .AddOsVersion()
-        .ToString() ?? string.Empty;
-    
     public TaskItem Task = new();
     public List<TaskItem> Tasks = new();
     
@@ -62,7 +55,6 @@
         if (firstRender)
         {
             var response = await Client.From<TaskItem>()
-                .Where(taskItem => taskItem.UserId == _deviceId)
                 .Get();
             Tasks = response.Models;
             StateHasChanged();
@@ -71,7 +63,6 @@
 
     async Task AddTask()
     {
-        Task.UserId = _deviceId;
         Tasks.Add(Task);
         await Client.From<TaskItem>()
             .Insert(Task);

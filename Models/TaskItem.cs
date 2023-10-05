@@ -31,9 +31,13 @@ public class TaskItem : BaseModel
     [PrimaryKey("id")]
     public int Id { get; set; }
     
+    [Column("userId")]
+    public string UserId { get; set; } = string.Empty;
+    
     [Column("taskName")]
     public string TaskName { get; set; } = string.Empty;
     
     [Column("isCompleted")]
     public bool IsCompleted { get; set; }
+
 }

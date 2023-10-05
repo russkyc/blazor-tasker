@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="BlazorAnimation" Version="2.2.0" />
+        <PackageReference Include="DeviceId" Version="6.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.22" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.22" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" Version="6.10.0" />

@@ -4,15 +4,15 @@
     <Animation Effect="@Effect.FadeOutRight" Speed="@Speed.Faster" Enabled="_isDisposed" OnAnimationEnd="OnRemove">
         <MudPaper Outlined="true" Class="pa-6">
             <MudStack Row="true" Class="d-flex flex-grow-1 gap-4">
-                <MudIcon Class="align-self-center" Size="Size.Large" Icon="@Icons.Material.Filled.Notes"/>
+                <MudIcon Class="align-self-center" Size="Size.Small" Icon="@Icons.Material.Filled.Notes"/>
                 <MudText Typo="Typo.subtitle1" Class="flex-grow-1 align-self-center">@Task.TaskName</MudText>
                 @if (Task.IsCompleted)
                 {
-                    <MudButton Size="Size.Large" Class="align-self-center" StartIcon="@Icons.Material.Filled.Delete" @onclick="@Remove" Variant="Variant.Text" Color="Color.Default">Remove</MudButton>
+                    <MudButton Size="Size.Medium" Class="align-self-center" StartIcon="@Icons.Material.Filled.Delete" @onclick="@Remove" Variant="Variant.Text" Color="Color.Default">Remove</MudButton>
                 }
                 else
                 {
-                    <MudButton Size="Size.Large" Class="align-self-center" StartIcon="@Icons.Material.Filled.Done" @onclick="@Complete" Variant="Variant.Filled" Color="Color.Primary">Complete</MudButton>
+                    <MudButton Size="Size.Medium" Class="align-self-center" StartIcon="@Icons.Material.Filled.Done" @onclick="@Complete" Variant="Variant.Filled" Color="Color.Primary">Done</MudButton>
                 }
             </MudStack>
         </MudPaper>

@@ -1,14 +1,18 @@
 ﻿
 <MudStack Class="d-flex flex-grow-1">
     <MudStack Row="true" Class="flex-grow-1">
-        <MudText Typo="Typo.subtitle1" Align="Align.Left">@Label</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Left">@Label (@TaskCount)</MudText>
         <MudSpacer/>
         <MudText Style="font-weight: bold;" Typo="Typo.subtitle1" Align="Align.Right">@Percentage%</MudText>
     </MudStack>
-    <MudProgressLinear Class="d-flex flex-grow-1 align-self-center" Rounded="true" Color="Color.Primary" Max="100" Size="Size.Large" Value="@Percentage"/>
+    <MudProgressLinear Class="d-flex flex-grow-1 align-self-center" Striped="@Striped" Rounded="true" Color="Color.Primary" Max="100" Size="Size.Large" Value="@Percentage"/>
 </MudStack>
 
 @code {
+    
+    private bool Striped => Percentage < 100;
+    
+    [Parameter] public int TaskCount { get; set; }
     [Parameter] public string Label { get; set; }
     [Parameter] public int Percentage { get; set; }
 }

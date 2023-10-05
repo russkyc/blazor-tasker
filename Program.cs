@@ -24,10 +24,21 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using TodoApp;
 using MudBlazor.Services;
+using Supabase;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+
+var url = "https://lhdsbprzrinouijgdmml.supabase.co";
+var key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZHNicHJ6cmlub3VpamdkbW1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY1MDkzNjIsImV4cCI6MjAxMjA4NTM2Mn0.XbxKwgF42yEU59bo6XgDAybi5kHv_GzNI2E5eS-RP5E";
+var options = new SupabaseOptions
+{
+    AutoRefreshToken = true
+};
+
+// Note the creation as a singleton.
+builder.Services.AddSingleton(provider => new Client(url, key, options));
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddMudServices();

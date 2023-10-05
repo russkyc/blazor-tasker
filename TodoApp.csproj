@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>10</LangVersion>
+        <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +13,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.22" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.22" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" Version="6.10.0" />
+        <PackageReference Include="supabase-csharp" Version="0.13.3" />
     </ItemGroup>
 
 

@@ -20,11 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Postgrest.Attributes;
+using Postgrest.Models;
+
 namespace TodoApp.Models;
 
-public class TaskItem
+[Table("tasks")]
+public class TaskItem : BaseModel
 {
-    public Guid Id = Guid.NewGuid();
-    public string TaskName = string.Empty;
-    public bool IsCompleted = false;
+    [PrimaryKey("id")]
+    public int Id { get; set; }
+    
+    [Column("taskName")]
+    public string TaskName { get; set; } = string.Empty;
+    
+    [Column("isCompleted")]
+    public bool IsCompleted { get; set; }
 }

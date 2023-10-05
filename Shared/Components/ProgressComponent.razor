@@ -1,0 +1,14 @@
+﻿
+<MudStack Class="d-flex flex-grow-1">
+    <MudStack Row="true" Class="flex-grow-1">
+        <MudText Typo="Typo.subtitle1" Align="Align.Left">@Label</MudText>
+        <MudSpacer/>
+        <MudText Style="font-weight: bold;" Typo="Typo.subtitle1" Align="Align.Right">@Percentage%</MudText>
+    </MudStack>
+    <MudProgressLinear Class="d-flex flex-grow-1 align-self-center" Rounded="true" Color="Color.Primary" Max="100" Size="Size.Large" Value="@Percentage"/>
+</MudStack>
+
+@code {
+    [Parameter] public required string Label { get; set; }
+    [Parameter] public int Percentage { get; set; }
+}

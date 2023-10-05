@@ -4,25 +4,26 @@
 
 <PageTitle>Blazor Tasker</PageTitle>
 
-<MudContainer Class="align-items-center">
+<MudContainer Class="align-items-center" MaxWidth="MaxWidth.Small">
     <MudText Style="font-weight: bold;" Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Blazor Tasker</MudText>
-
     <MudStack Spacing="7">
-        <MudStack Row="true" Class="d-flex flex-grow-1">
-            <MudTextField Variant="Variant.Outlined" Label="Task Name" @bind-Value="@TaskName" Immediate="true"></MudTextField>
-            <MudButton Class="mt-1" @onclick="AddTask" Disabled="@TaskNameEmpty" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.AddCircle">Add Task</MudButton>
-        </MudStack>
-
+        <EditForm Model="@Task" OnSubmit="@AddTask">
+            <MudStack Row="true" Class="d-flex flex-grow-1">
+                <MudTextField Variant="Variant.Outlined" Label="Task Name" @bind-Value="@Task.TaskName" Immediate="true"></MudTextField>
+                <MudButton ButtonType="ButtonType.Submit" Class="mt-1" Disabled="@IsTaskNameEmpty" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.AddCircle">Add</MudButton>
+            </MudStack>
+        </EditForm>
         @if (Tasks.Count > 0)
         {
-            @foreach (TaskItem task in Tasks)
-            {
-                <TaskComponent @key="@task.Id" Task="@task" OnCompleted="@(CompleteTask)" OnRemove="@(() => RemoveTask(task))"/>
-            }
+            <MudStack Spacing="5">
+                @foreach (TaskItem task in Tasks)
+                {
+                    <TaskItemComponent @key="@task.Id" Task="@task" OnCompleted="@(CompleteTask)" OnRemove="@(() => RemoveTask(task))"/>
+                }
+            </MudStack>
         }
         else
         {
-            @*Enter Animation (Triggered on load)*@
             <Animation Effect="@Effect.FadeIn" Speed="@Speed.Faster">
                 <MudStack Class="ma-3" Style="opacity: 0.2;">
                     <MudIcon Color="Color.Inherit" Class="align-self-center" Size="Size.Large" Icon="@Icons.Material.Filled.NoteAdd"/>
@@ -30,43 +31,24 @@
                 </MudStack>
             </Animation>
         }
-
-        <MudStack Class="d-flex flex-grow-1">
-            <MudStack Row="true" Class="flex-grow-1">
-                <MudText Typo="Typo.subtitle1" Align="Align.Left">Completed</MudText>
-                <MudSpacer/>
-                <MudText Style="font-weight: bold;" Typo="Typo.subtitle1" Align="Align.Right">@CompletedPercent%</MudText>
-            </MudStack>
-            <MudProgressLinear Class="d-flex flex-grow-1 align-self-center" Rounded="true" Color="Color.Primary" Max="100" Size="Size.Large" Value="@CompletedPercent"/>
-        </MudStack>
-        <MudStack Class="d-flex flex-grow-1">
-            <MudStack Row="true" Class="flex-grow-1">
-                <MudText Typo="Typo.subtitle1" Align="Align.Left">In Progress</MudText>
-                <MudSpacer/>
-                <MudText Style="font-weight: bold;" Typo="Typo.subtitle1" Align="Align.Right">@InProgressPercent%</MudText>
-            </MudStack>
-            <MudProgressLinear Striped="true" Class="d-flex flex-grow-1 align-self-center" Rounded="true" Color="Color.Primary" Max="100" Size="Size.Large" Value="@InProgressPercent"/>
-        </MudStack>
+        <ProgressComponent Label="Completed" Percentage="@CompletedPercent"/>
+        <ProgressComponent Label="In Progress" Percentage="@InProgressPercent"/>
     </MudStack>
 </MudContainer>
 
 @code
 {
-    public string TaskName = "";
-    public bool TaskNameEmpty => string.IsNullOrEmpty(TaskName.Trim());
     public readonly List<TaskItem> Tasks = new();
+    public TaskItem Task = new();
+    
+    public bool IsTaskNameEmpty => string.IsNullOrEmpty(Task.TaskName.Trim());
     public int CompletedPercent => Tasks.Count == 0 ? 0 : (int)((double)Tasks.Count(t => t.IsCompleted) / Tasks.Count * 100);
     public int InProgressPercent => Tasks.Count == 0 ? 0 : (int)((double)Tasks.Count(t => !t.IsCompleted) / Tasks.Count * 100);
 
     void AddTask()
     {
-        if (string.IsNullOrEmpty(TaskName.Trim()))
-        {
-            return;
-        }
-
-        Tasks.Insert(0, new TaskItem(TaskName));
-        TaskName = string.Empty;
+        Tasks.Add(Task);
+        Task = new();
         StateHasChanged();
     }
 
@@ -80,5 +62,4 @@
         Tasks.Remove(taskItem);
         StateHasChanged();
     }
-
 }

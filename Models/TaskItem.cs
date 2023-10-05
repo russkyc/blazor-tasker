@@ -22,9 +22,9 @@
 
 namespace TodoApp.Models;
 
-public class TaskItem(string taskName)
+public class TaskItem
 {
     public Guid Id = Guid.NewGuid();
-    public readonly string TaskName = taskName;
+    public string TaskName = string.Empty;
     public bool IsCompleted = false;
 }

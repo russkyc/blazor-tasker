@@ -1,8 +1,6 @@
 ﻿@using TodoApp.Models
 
-@*Enter Animation (Triggered on load)*@
 <Animation Effect="@Effect.FadeInLeft" Speed="@Speed.Faster">
-    @*Exit Animation (Triggered on _isDisposed = true)*@
     <Animation Effect="@Effect.FadeOutRight" Speed="@Speed.Faster" Enabled="_isDisposed" OnAnimationEnd="OnRemove">
         <MudPaper Outlined="true" Class="pa-6">
             <MudStack Row="true" Class="d-flex flex-grow-1 gap-4">
@@ -14,7 +12,7 @@
                 }
                 else
                 {
-                    <MudButton Size="Size.Large" Class="align-self-center" StartIcon="@Icons.Material.Filled.Done" @onclick="@(() => Complete(true))" Variant="Variant.Filled" Color="Color.Primary">Complete</MudButton>
+                    <MudButton Size="Size.Large" Class="align-self-center" StartIcon="@Icons.Material.Filled.Done" @onclick="@Complete" Variant="Variant.Filled" Color="Color.Primary">Complete</MudButton>
                 }
             </MudStack>
         </MudPaper>
@@ -25,23 +23,18 @@
 {
     private bool _isDisposed;
 
-    [Parameter]
-    public required TaskItem Task { get; set; }
+    [Parameter] public required TaskItem Task { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public EventCallback OnCompleted { get; set; }
 
-    [Parameter]
-    public EventCallback OnRemove { get; set; }
-
-    [Parameter]
-    public EventCallback OnCompleted { get; set; }
-
-    async Task Remove()
+    void Remove()
     {
         _isDisposed = true;
     }
 
-    void Complete(bool complete)
+    void Complete()
     {
-        Task.IsCompleted = complete;
+        Task.IsCompleted = true;
         OnCompleted.InvokeAsync();
     }
 }

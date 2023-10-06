@@ -20,17 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.ComponentModel.DataAnnotations;
-
 namespace TodoApp.Models;
 
-public class TaskItem
+public record TaskItem
 {
-    [Key]
-    public int Id { get; set; }
-    
-    public string TaskName { get; set; } = string.Empty;
-    
+    public Func<int> HashCode => GetHashCode;
+    public string? TaskName { get; set; }
     public bool IsCompleted { get; set; }
 
 }

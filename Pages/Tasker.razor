@@ -2,17 +2,13 @@
 
 @using TodoApp.Shared.Components
 @using TodoApp.Models
-@using TodoApp.Persistence
-@using SqliteWasmHelper
-@using Microsoft.EntityFrameworkCore
 
-@inject ISqliteWasmDbContextFactory<AppDbContext> DbFactory
 <PageTitle>Blazor Tasker Wasm</PageTitle>
 
 <MudContainer Class="align-items-center" MaxWidth="MaxWidth.Small">
     <MudText Style="font-weight: bold;" Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Blazor Tasker</MudText>
     <MudStack Spacing="7">
-        <EditForm Model="@Task" OnSubmit="@(async () => await AddTask())">
+        <EditForm Model="@Task" OnSubmit="@AddTask">
             <MudStack Row="true" Class="d-flex flex-grow-1">
                 <MudTextField Variant="Variant.Outlined" Label="Task Name" @bind-Value="@Task.TaskName" Immediate="true"></MudTextField>
                 <MudButton ButtonType="ButtonType.Submit" Class="mt-1" Disabled="@IsTaskNameEmpty" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.AddCircle">Add</MudButton>
@@ -23,7 +19,7 @@
             <MudStack Spacing="5">
                 @foreach (TaskItem task in Tasks)
                 {
-                    <TaskItemComponent @key="@task.GetHashCode" Task="@task" OnCompleted="@(async () => await CompleteTask(task.Id))" OnRemove="@(async () => await RemoveTask(task))"/>
+                    <TaskItemComponent @key="@task.HashCode" Task="@task" OnCompleted="@CompleteTask" OnRemove="@(() => RemoveTask(task))"/>
                 }
             </MudStack>
             <Animation Effect="@Effect.FadeIn" Speed="@Speed.Faster">
@@ -45,58 +41,27 @@
 @code
 {
     public TaskItem Task = new();
-    public List<TaskItem> Tasks = new();
+    public readonly List<TaskItem> Tasks = new();
     
-    public bool IsTaskNameEmpty => string.IsNullOrEmpty(Task.TaskName.Trim());
+    public bool IsTaskNameEmpty => string.IsNullOrEmpty(Task.TaskName);
     public int CompletedPercent => Tasks.Count == 0 ? 0 : (int)((double)Tasks.Count(t => t.IsCompleted) / Tasks.Count * 100);
     public int InProgressPercent => Tasks.Count == 0 ? 0 : (int)((double)Tasks.Count(t => !t.IsCompleted) / Tasks.Count * 100);
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    void AddTask()
     {
-        if (firstRender)
-        {
-            await using var db = await DbFactory.CreateDbContextAsync();
-            Tasks = await db.Tasks.ToListAsync();
-            StateHasChanged();
-        }
-    }
-
-    async Task AddTask()
-    {
-        await using var db = await DbFactory.CreateDbContextAsync();
-        await db.Tasks.AddAsync(Task);
-        await db.SaveChangesAsync();
-        StateHasChanged();
+        Tasks.Add(Task);
         Task = new();
-    }
-
-    async Task CompleteTask(int id)
-    {
-        await using var db = await DbFactory.CreateDbContextAsync();
-        var task = db.Tasks.FirstOrDefault(t => t.Id == id);
-
-        if (task is null)
-        {
-            return;
-        }
-        
-        task.IsCompleted = true;
-        await db.SaveChangesAsync();
         StateHasChanged();
     }
 
-    async Task RemoveTask(TaskItem taskItem)
+    void CompleteTask()
     {
-        await using var db = await DbFactory.CreateDbContextAsync();
-        var task = db.Tasks.FirstOrDefault(task => task.Id == taskItem.Id);
+        StateHasChanged();
+    }
 
-        if (task is null)
-        {
-            return;
-        }
-        
-        db.Remove(task);
-        await db.SaveChangesAsync();
+    void RemoveTask(TaskItem task)
+    {
+        Tasks.Remove(task);
         StateHasChanged();
     }
 }
